@@ -20,7 +20,8 @@ public class Way
 	private double radius = 0;
 	private Position center;
 	private Map<String, String> tags;
-
+	private static final String[] tagsToInsert =
+	{ "name", "wikipedia", "website" };
 	// List of way's node
 	// private List nodes;
 
@@ -30,10 +31,6 @@ public class Way
 
 	public Way()
 	{
-		nd = "";
-		nd2 = "";
-		webSite = "";
-		wikipedia = "";
 		nodes = new LinkedList<NodeLocation>();
 		positions = new HashSet<Position>();
 		tags = new HashMap<String, String>();
@@ -105,7 +102,7 @@ public class Way
 	public void AddNode(NodeLocation n)
 	{
 		nodes.add(n);
-		// positions.add(n.getPs());
+		positions.add(n.getPs());
 	}
 
 	/*
@@ -119,7 +116,7 @@ public class Way
 		return radius;
 	}
 
-	public double calculateCircumscribedArea()
+	public double getCalculateCircumscribedArea()
 	{
 		calculateRadius();
 		return radius * radius * Math.PI;
@@ -127,11 +124,8 @@ public class Way
 
 	public boolean isCloseWay()
 	{
-		NodeLocation n = nodes.get(0);
-		nd = n.getId();
-		int i = nodes.size() - 1;
-		n = nodes.get(i);
-		nd2 = n.getId();
+		nd = ((LinkedList<NodeLocation>) nodes).getFirst().getId();
+		nd2 = ((LinkedList<NodeLocation>) nodes).getLast().getId();
 		return nd.equals(nd2);
 	}
 
@@ -161,11 +155,19 @@ public class Way
 	{
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("id", getID().toString());
-		if (name != null)
-			jsonObject.put("name", getName());
-		if (wikipedia != null)
-			jsonObject.put("wikipedia", getWikipedia());
-
+		for (String element : tagsToInsert)
+			if (tags.containsKey(element))
+				jsonObject.put("name", tags.get(element));
+		jsonObject.put("area", getCalculateCircumscribedArea());
 		return jsonObject;
+	}
+
+	public boolean containTags(Map<String, String> requiredTags)
+	{
+		for (String string : requiredTags.keySet())
+			if (!tags.containsKey(string)
+					|| !tags.get(string).equals(requiredTags.get(string)))
+				return false;
+		return true;
 	}
 }

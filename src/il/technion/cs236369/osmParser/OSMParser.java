@@ -3,8 +3,6 @@ package il.technion.cs236369.osmParser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -39,12 +37,16 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 	// Define how many time each node appear in ways
 	private Map<String, Integer> NodeApperenace = new HashMap<String, Integer>();
 
+	private JSONArray array;
+
+	private Map<String, String> requiredTags;
+
 	// private SAXParser sp;
 
 	public OSMParser() throws Exception, SAXException
 	{
 		SAXParserFactory.newInstance();
-
+		array = new JSONArray();
 		// Now use the parser factory to create a SAXParser object
 		// sp = spfac.newSAXParser();
 	}
@@ -120,13 +122,12 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException
 	{
-		if (currentWay != null && stateWay == true
-				&& qName.equalsIgnoreCase("way"))
+		if (currentWay != null && stateWay && qName.equalsIgnoreCase("way"))
 		{
-			if (currentWay.isCloseWay())
-				closedwayList.add(currentWay);
-			else
-				currentWay = null;
+			if (currentWay.isCloseWay() && currentWay.containTags(requiredTags))
+				array.add(currentWay.toJSON());
+
+			currentWay = null;
 			stateWay = false;
 		}
 	}
@@ -140,6 +141,7 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 	@Override
 	public JSONArray parse(String osmFile, ITagsRequired tagsRequired)
 	{
+		requiredTags = tagsRequired.getTags();
 		try
 		{
 			SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -149,16 +151,7 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 		{
 			ex.printStackTrace();
 		}
-		JSONArray array = new JSONArray();
-		for (Way way : closedwayList)
-		{
-			Set<Entry<String, String>> tagsToCheck = tagsRequired.getTags()
-					.entrySet();
-			for (Entry<String, String> entry : tagsToCheck)
-				if (!way.containTag(entry.getKey()))
-					break;
-			array.add(way.toJSON());
-		}
+
 		return array;
 	}
 
@@ -169,4 +162,5 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 	{
 		return closedwayList;
 	}
+
 }

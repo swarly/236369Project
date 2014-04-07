@@ -12,7 +12,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class OSMParser extends DefaultHandler implements IOSMParser {
+public class OSMParser extends DefaultHandler implements IOSMParser
+{
 
 	// Way object
 	private Way way;
@@ -37,7 +38,8 @@ public class OSMParser extends DefaultHandler implements IOSMParser {
 
 	private final SAXParser sp;
 
-	OSMParser() throws Exception, SAXException {
+	public OSMParser() throws Exception, SAXException
+	{
 		// Create a "parser factory" for creating SAX parsers
 		SAXParserFactory spfac = SAXParserFactory.newInstance();
 
@@ -50,7 +52,8 @@ public class OSMParser extends DefaultHandler implements IOSMParser {
 	 * method, which accumulates them in a string buffer not in use here.
 	 */
 	@Override
-	public void characters(char[] buffer, int start, int length) {
+	public void characters(char[] buffer, int start, int length)
+	{
 		temp = new String(buffer, start, length);
 	}
 
@@ -61,7 +64,8 @@ public class OSMParser extends DefaultHandler implements IOSMParser {
 	 */
 	@Override
 	public void startElement(String uri, String localName, String qName,
-			Attributes attributes) throws SAXException {
+			Attributes attributes) throws SAXException
+	{
 		temp = "";
 		String key;
 		// Node element
@@ -76,7 +80,8 @@ public class OSMParser extends DefaultHandler implements IOSMParser {
 		 */
 
 		// check if way element arrived
-		if (qName.equalsIgnoreCase("way") && stateWay == false) {
+		if (qName.equalsIgnoreCase("way") && stateWay == false)
+		{
 			way = new Way();
 			way.setID(attributes.getValue("id").toString());
 			stateWay = true;
@@ -89,9 +94,11 @@ public class OSMParser extends DefaultHandler implements IOSMParser {
 				way.setWikipedia(attributes.getValue("v").toString());
 
 		// read nd id for current 'way'
-		if (stateWay == true && "nd".equalsIgnoreCase(qName)) {
+		if (stateWay == true && "nd".equalsIgnoreCase(qName))
+		{
 			key = attributes.getValue(0);
-			if (NodeApperenace.containsKey(key)) {
+			if (NodeApperenace.containsKey(key))
+			{
 				int k = NodeApperenace.get(key);
 				NodeApperenace.remove(key);
 				NodeApperenace.put(key, k + 1);
@@ -106,8 +113,10 @@ public class OSMParser extends DefaultHandler implements IOSMParser {
 	 */
 	@Override
 	public void endElement(String uri, String localName, String qName)
-			throws SAXException {
-		if (way != null && stateWay == true && qName.equalsIgnoreCase("way")) {
+			throws SAXException
+	{
+		if (way != null && stateWay == true && qName.equalsIgnoreCase("way"))
+		{
 			if (way.IsCloseWay())
 				wayList.add(way);
 			else
@@ -117,7 +126,8 @@ public class OSMParser extends DefaultHandler implements IOSMParser {
 	}
 
 	@Override
-	public JSONArray parse(String osmFile, ITagsRequired tagsRequired) {
+	public JSONArray parse(String osmFile, ITagsRequired tagsRequired)
+	{
 		// TODO Auto-generated method stub
 
 		return null;

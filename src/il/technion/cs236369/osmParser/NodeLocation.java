@@ -1,5 +1,7 @@
 package il.technion.cs236369.osmParser;
 
+import org.xml.sax.Attributes;
+
 public class NodeLocation
 {
 
@@ -8,82 +10,47 @@ public class NodeLocation
 	private double lon;
 	private String user;
 	private String uid;
-	
-	
-	NodeLocation()
-	{
-		
-	}
-	public NodeLocation(String id)
+
+	public NodeLocation(String id, Attributes attributes)
 	{
 		this.id = id;
+		this.lat = Float.parseFloat(attributes.getValue("lat"));
+		this.lon = Float.parseFloat(attributes.getValue("lon"));
+		this.uid = attributes.getValue("uid").toString();
+		this.user = attributes.getValue("user").toString();
 	}
 
-	public NodeLocation(String id, double lat, double lon) 
+	public String getId()
 	{
-		this.id = id;
-		this.lat = lat;
-		this.lon = lon;
+		return id;
 	}
 
-	public String getId() 
-	{
-		return id; 	
-	}
-
-	public void setId(String id) 
-	{
-		this.id = id;
-	}
-
-	public double getLat() 
+	public double getLat()
 	{
 		return lat;
 	}
 
-	public void setLat(double lat) 
-	{
-		this.lat = lat;
-	}
-
-	public double getLon() 
+	public double getLon()
 	{
 		return lon;
 	}
 
-	public void setLon(double lon) 
-	{
-		this.lon = lon;
-	}
-
-	public String getUser() 
+	public String getUser()
 	{
 		return user;
 	}
 
-	public void setUser(String user) 
-	{
-		this.user = user;
-	}
-
-	public String getUid() 
+	public String getUid()
 	{
 		return uid;
-	}
-
-	public void setUid(String uid) 
-	{
-		this.uid = uid;
 	}
 
 	/*
 	 * Return node position
 	 */
-	public Position getPs() 
+	public Position getPs()
 	{
-		return (new Position(lat, lon));
+		return new Position(lat, lon);
 	}
 
-	
-	
 }

@@ -29,12 +29,7 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 
 	private ArrayList<Way> closedwayList = new ArrayList<Way>();
 
-	// List of all node object
-
-	// private final ArrayList<NodeLocation> NodeList = new
-	// ArrayList<NodeLocation>();
-
-	// Define how many time each node appear in ways
+	private Map<String, NodeLocation> nodeList;
 	private Map<String, Integer> NodeApperenace = new HashMap<String, Integer>();
 
 	private JSONArray array;
@@ -47,6 +42,7 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 	{
 		SAXParserFactory.newInstance();
 		array = new JSONArray();
+		nodeList = new HashMap<String, NodeLocation>();
 		// Now use the parser factory to create a SAXParser object
 		// sp = spfac.newSAXParser();
 	}
@@ -73,15 +69,14 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 		// temp = "";
 		String key;
 		// Node element
-		/*
-		 * if(qName.equalsIgnoreCase("node")) { node = new NodeLocation();
-		 * node.setId(attributes.getValue("id").toString());
-		 * node.setLat(Float.parseFloat(attributes.getValue("lat")));
-		 * node.setLon(Float.parseFloat(attributes.getValue("lon")));
-		 * node.setUid(attributes.getValue("uid").toString());
-		 * node.setUser(attributes.getValue("user").toString());
-		 * NodeList.add(node); NodeApperenace.put(node.getId(), 0); }
-		 */
+
+		if (qName.equalsIgnoreCase("node"))
+		{
+			String id = attributes.getValue("id").toString();
+			NodeLocation node = new NodeLocation(id, attributes);
+			nodeList.put(id, node);
+			NodeApperenace.put(node.getId(), 0);
+		}
 
 		// check if way element arrived
 		if (qName.equalsIgnoreCase("way") && !stateWay)
@@ -110,7 +105,7 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 				NodeApperenace.remove(key);
 				NodeApperenace.put(key, k + 1);
 			}
-			currentWay.AddNode(new NodeLocation(key));
+			currentWay.addNode(nodeList.get(key));
 		}
 	}
 
@@ -118,6 +113,7 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 	 * When the parser encounters the end of an element, it calls this method
 	 * call forever element - include nested
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException

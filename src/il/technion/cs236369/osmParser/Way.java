@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class Way
@@ -21,9 +22,7 @@ public class Way
 	private Position center;
 	private Map<String, String> tags;
 	private static final String[] tagsToInsert =
-	{ "name", "wikipedia", "website" };
-	// List of way's node
-	// private List nodes;
+	{ "name", "wiki", "website" };
 
 	List<NodeLocation> nodes;
 	// List of node's position
@@ -99,7 +98,7 @@ public class Way
 	/*
 	 * Add node to way and convert it to position
 	 */
-	public void AddNode(NodeLocation n)
+	public void addNode(NodeLocation n)
 	{
 		nodes.add(n);
 		positions.add(n.getPs());
@@ -120,6 +119,13 @@ public class Way
 	{
 		calculateRadius();
 		return radius * radius * Math.PI;
+	}
+
+	private int getNumOfUnique()
+	{
+		HashSet<NodeLocation> set = new HashSet<NodeLocation>();
+		set.addAll(nodes);
+		return set.size();
 	}
 
 	public boolean isCloseWay()
@@ -151,6 +157,7 @@ public class Way
 		return tags.containsKey(key);
 	}
 
+	@SuppressWarnings("unchecked")
 	public JSONObject toJSON()
 	{
 		JSONObject jsonObject = new JSONObject();
@@ -158,8 +165,31 @@ public class Way
 		for (String element : tagsToInsert)
 			if (tags.containsKey(element))
 				jsonObject.put("name", tags.get(element));
-		jsonObject.put("area", getCalculateCircumscribedArea());
+		jsonObject.put("Circumscribed Circle Area",
+				getCalculateCircumscribedArea());
+		jsonObject.put("numNodes", getNumOfUnique());
+		JSONArray array = new JSONArray();
+		if (tags.containsKey("user"))
+			array.add(tags.get("user"));
+		for (String user : getUsers())
+			array.add(user);
+		jsonObject.put("users", array);
+		jsonObject.put("coordinates", getCoordinates());
 		return jsonObject;
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONArray getCoordinates()
+	{
+		JSONArray array = new JSONArray();
+		for (NodeLocation node : nodes)
+		{
+			JSONObject coordinate = new JSONObject();
+			coordinate.put("lat", String.valueOf(node.getLat()));
+			coordinate.put("lon", String.valueOf(node.getLon()));
+			array.add(coordinate);
+		}
+		return array;
 	}
 
 	public boolean containTags(Map<String, String> requiredTags)
@@ -169,5 +199,13 @@ public class Way
 					|| !tags.get(string).equals(requiredTags.get(string)))
 				return false;
 		return true;
+	}
+
+	private Set<String> getUsers()
+	{
+		Set<String> users = new HashSet<String>();
+		for (NodeLocation nodeLocation : nodes)
+			users.add(nodeLocation.getUser());
+		return users;
 	}
 }

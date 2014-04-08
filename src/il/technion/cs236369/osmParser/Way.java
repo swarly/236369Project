@@ -109,8 +109,9 @@ public class Way
 	 */
 	public double calculateRadius()
 	{
+		Set<Position> cleanPositions = new HashSet<Position>(positions);
 		center = Position.getCenter(positions);
-		for (Position p : positions)
+		for (Position p : cleanPositions)
 			radius = Math.max(radius, p.haversineDistance(center));
 		return radius;
 	}
@@ -130,8 +131,8 @@ public class Way
 
 	public boolean isCloseWay()
 	{
-		if (nodes.isEmpty())
-			return true;
+		if (nodes.size() < 2)
+			return false;
 		nd = ((LinkedList<NodeLocation>) nodes).getFirst().getId();
 		nd2 = ((LinkedList<NodeLocation>) nodes).getLast().getId();
 		return nd.equals(nd2);
@@ -184,11 +185,11 @@ public class Way
 	private JSONArray getCoordinates()
 	{
 		JSONArray array = new JSONArray();
-		for (NodeLocation node : nodes)
+		for (Position position : positions)
 		{
 			JSONObject coordinate = new JSONObject();
-			coordinate.put("lat", String.valueOf(node.getLat()));
-			coordinate.put("lon", String.valueOf(node.getLon()));
+			coordinate.put("lat", String.valueOf(position.getNorth()));
+			coordinate.put("lon", String.valueOf(position.getEast()));
 			array.add(coordinate);
 		}
 		return array;

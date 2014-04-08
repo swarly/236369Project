@@ -76,7 +76,7 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 		if (qName.equalsIgnoreCase("node"))
 		{
 			String id = attributes.getValue("id").toString();
-			if (Collections.binarySearch(requiredNodes, id) > 0)
+			if (requiredNodes.contains(id))
 			{
 				NodeLocation node = new NodeLocation(id, attributes);
 				nodeList.put(id, node);
@@ -89,6 +89,8 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 		{
 			currentWay = new Way();
 			currentWay.setID(attributes.getValue("id").toString());
+			if (currentWay.getID().equals("32946753"))
+				currentWay.toString();
 			stateWay = true;
 		}
 

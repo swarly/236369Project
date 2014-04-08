@@ -1,7 +1,10 @@
 package il.technion.cs236369.osmParser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
@@ -26,7 +29,7 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 
 	// Define if current element is 'way'
 	private boolean stateWay = false;
-
+	private List<String> requiredNodes;
 	private ArrayList<Way> closedwayList = new ArrayList<Way>();
 
 	private Map<String, NodeLocation> nodeList;
@@ -42,7 +45,7 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 	{
 		SAXParserFactory.newInstance();
 		array = new JSONArray();
-		nodeList = new HashMap<String, NodeLocation>();
+		nodeList = new LinkedHashMap<String, NodeLocation>();
 		// Now use the parser factory to create a SAXParser object
 		// sp = spfac.newSAXParser();
 	}
@@ -73,9 +76,12 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 		if (qName.equalsIgnoreCase("node"))
 		{
 			String id = attributes.getValue("id").toString();
-			NodeLocation node = new NodeLocation(id, attributes);
-			nodeList.put(id, node);
-			NodeApperenace.put(node.getId(), 0);
+			if (Collections.binarySearch(requiredNodes, id) > 0)
+			{
+				NodeLocation node = new NodeLocation(id, attributes);
+				nodeList.put(id, node);
+				NodeApperenace.put(node.getId(), 0);
+			}
 		}
 
 		// check if way element arrived
@@ -105,7 +111,8 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 				NodeApperenace.remove(key);
 				NodeApperenace.put(key, k + 1);
 			}
-			currentWay.addNode(nodeList.get(key));
+			if (nodeList.get(key) != null)
+				currentWay.addNode(nodeList.get(key));
 		}
 	}
 
@@ -138,6 +145,19 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 	public JSONArray parse(String osmFile, ITagsRequired tagsRequired)
 	{
 		requiredTags = tagsRequired.getTags();
+		NodeList list = new NodeList(requiredTags);
+		try
+		{
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(osmFile, list);
+		} catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		requiredNodes = list.getFinalNodes();
+		Collections.sort(requiredNodes);
+
 		try
 		{
 			SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -147,7 +167,6 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 		{
 			ex.printStackTrace();
 		}
-
 		return array;
 	}
 

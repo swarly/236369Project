@@ -130,6 +130,8 @@ public class Way
 
 	public boolean isCloseWay()
 	{
+		if (nodes.isEmpty())
+			return true;
 		nd = ((LinkedList<NodeLocation>) nodes).getFirst().getId();
 		nd2 = ((LinkedList<NodeLocation>) nodes).getLast().getId();
 		return nd.equals(nd2);

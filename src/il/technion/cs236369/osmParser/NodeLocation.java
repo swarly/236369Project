@@ -2,6 +2,10 @@ package il.technion.cs236369.osmParser;
 
 import org.xml.sax.Attributes;
 
+/**
+ * @author Arik NodeLocation is an object used to describe a single node this
+ *         class contain getters and setters
+ */
 public class NodeLocation
 {
 

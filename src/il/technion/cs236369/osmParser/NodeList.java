@@ -9,6 +9,11 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ * @author Arik NodeList is an object that is used to scan the XML file and
+ *         return a list of nodes that exist only in closed ways ( these node
+ *         may exist in other non closed ways
+ */
 public class NodeList extends DefaultHandler
 {
 
@@ -65,6 +70,12 @@ public class NodeList extends DefaultHandler
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String,
+	 * java.lang.String, java.lang.String)
+	 */
 	@Override
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException
@@ -79,6 +90,9 @@ public class NodeList extends DefaultHandler
 		}
 	}
 
+	/**
+	 * @return true if supplied required tags contained in the way
+	 */
 	private boolean isCloseWay()
 	{
 		String nd = ((LinkedList<String>) tmpNodes).getFirst();

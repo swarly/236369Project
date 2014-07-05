@@ -39,15 +39,11 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 
 	private Map<String, String> requiredTags;
 
-	// private SAXParser sp;
-
 	public OSMParser() throws Exception, SAXException
 	{
 		SAXParserFactory.newInstance();
 		array = new JSONArray();
 		nodeList = new LinkedHashMap<String, NodeLocation>();
-		// Now use the parser factory to create a SAXParser object
-		// sp = spfac.newSAXParser();
 	}
 
 	/*
@@ -64,6 +60,18 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 	 * Every time the parser encounters the beginning of a new element, it calls
 	 * this method, which resets the string buffer. it can be nested element -
 	 * will call for each element.
+	 */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String,
+	 * java.lang.String, java.lang.String, org.xml.sax.Attributes)
+	 */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String,
+	 * java.lang.String, java.lang.String, org.xml.sax.Attributes)
 	 */
 	@Override
 	public void startElement(String uri, String localName, String qName,
@@ -84,7 +92,6 @@ public class OSMParser extends DefaultHandler implements IOSMParser
 			}
 		}
 
-		// check if way element arrived
 		if (qName.equalsIgnoreCase("way") && !stateWay)
 		{
 			currentWay = new Way();

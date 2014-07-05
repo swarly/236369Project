@@ -10,6 +10,10 @@ import java.util.Set;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+/**
+ * @author Arik Way describe a way - prefred a closed one a typical way consists
+ *         of an id tags set and node lisst
+ */
 public class Way
 {
 	private String name;
@@ -28,6 +32,9 @@ public class Way
 	// List of node's position
 	private Set<Position> positions;
 
+	/**
+	 * defualt Ctor
+	 */
 	public Way()
 	{
 		nodes = new LinkedList<NodeLocation>();
@@ -35,21 +42,39 @@ public class Way
 		tags = new HashMap<String, String>();
 	}
 
+	/**
+	 * set a name for the way
+	 * 
+	 * @param name
+	 *            - name of the way
+	 */
 	public void setName(String name)
 	{
 		this.name = name;
 	}
 
+	/**
+	 * @return name of the way iif exist null otherwise
+	 */
 	public String getName()
 	{
 		return name;
 	}
 
+	/**
+	 * set id for the way
+	 * 
+	 * @param id
+	 *            -id for the way
+	 */
 	public void setID(String id)
 	{
 		this.id = id;
 	}
 
+	/**
+	 * @return the id of the way
+	 */
 	public String getID()
 	{
 		return id;
@@ -116,12 +141,18 @@ public class Way
 		return radius;
 	}
 
-	public double getCalculateCircumscribedArea()
+	/**
+	 * @return way area
+	 */
+	private double getCalculateCircumscribedArea()
 	{
 		calculateRadius();
 		return radius * radius * Math.PI;
 	}
 
+	/**
+	 * @return get number of unique nodes in the way
+	 */
 	private int getNumOfUnique()
 	{
 		HashSet<NodeLocation> set = new HashSet<NodeLocation>();
@@ -129,6 +160,9 @@ public class Way
 		return set.size();
 	}
 
+	/**
+	 * @return true if the way is closed
+	 */
 	public boolean isCloseWay()
 	{
 		if (nodes.size() < 2)
@@ -160,6 +194,9 @@ public class Way
 		return tags.containsKey(key);
 	}
 
+	/**
+	 * @return a way in JSON format
+	 */
 	@SuppressWarnings("unchecked")
 	public JSONObject toJSON()
 	{
@@ -195,6 +232,12 @@ public class Way
 		return array;
 	}
 
+	/**
+	 * @param requiredTags
+	 *            map<String,String> of required tags
+	 * @return true if all tag supplied in the requiredTags map contained in the
+	 *         way
+	 */
 	public boolean containTags(Map<String, String> requiredTags)
 	{
 		for (String string : requiredTags.keySet())
@@ -204,6 +247,9 @@ public class Way
 		return true;
 	}
 
+	/**
+	 * @return set of unique user contributed to this way
+	 */
 	private Set<String> getUsers()
 	{
 		Set<String> users = new HashSet<String>();
